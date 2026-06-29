@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
@@ -113,7 +114,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        myWebView.webViewClient = WebViewClient()
+        myWebView.webViewClient = object : WebViewClient() {
+            // Forward D-pad key events to the WebView's JavaScript for TV navigation
+            override fun shouldOverrideKeyEvent(view: WebView, event: KeyEvent): Boolean {
+                return false // Let WebView handle it normally and bubble to JS
+            }
+
+            override fun onPageFinished(view: WebView, url: String) {
+                super.onPageFinished(view, url)
+                // Auto-focus first element after page load for TV remote
+                view.evaluateJavascript(
+                    "setTimeout(focusTvFirstElement, 500);",
+                    null
+                )
+                Log.d(TAG, "Page loaded: $url")
+            }
+        }
 
         // ─── Inject native bridge into JavaScript ───
         myWebView.addJavascriptInterface(

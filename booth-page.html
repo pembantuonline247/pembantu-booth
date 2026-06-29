@@ -160,6 +160,18 @@
     transform: scale(1.05);
   }
 
+  /* TV focus ring — manually applied by JS focus manager for reliable D-pad */
+  .tv-focused {
+    outline: 4px solid #e94560 !important;
+    outline-offset: 5px !important;
+    box-shadow: 0 0 24px rgba(233,69,96,.8), 0 0 48px rgba(233,69,96,.3) !important;
+    border-radius: 8px;
+    transform: scale(1.08);
+    transition: all .1s ease-out;
+    position: relative;
+    z-index: 10;
+  }
+
   /* ── Countdown overlay ── */
   #countdown-overlay {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -1200,23 +1212,175 @@ window.addEventListener('onCameraStreamError', (e) => {
 });
 
 // ──────────────────────────────────────────────────
-// TV Remote / D-pad key support
 // ──────────────────────────────────────────────────
-document.addEventListener('keydown', (e) => {
-  if ((e.key === 'Enter' || e.key === ' ' || e.key === 'Select') && e.target && e.target !== document.body) {
-    const el = e.target;
-    // Trigger click on whatever is focused
+// TV Remote D-pad Focus Manager
+// ──────────────────────────────────────────────────
+// This manages focus navigation manually because Android TV WebView
+// does NOT reliably handle D-pad navigation between elements.
+
+let tvFocusables = [];
+let tvFocusIndex = -1;
+
+function getTVFocusables() {
+  // Collect ALL clickable elements in visual order
+  const SELECTOR = [
+    '.source-tab',
+    '.btn',
+    '.btn-sm',
+    '.filter-chip',
+    '.color-swatch',
+    '.gallery-thumb',
+    '#rec-btn',
+    '#device-list li',
+    '#modal-dl-btn',
+    '.modal-actions .btn'
+  ].join(', ');
+
+  const panel = document.getElementById('panel');
+  if (!panel) return [];
+
+  const els = [];
+  // Query all buttons within panel first (the sidebar)
+  panel.querySelectorAll('button, .filter-chip, .color-swatch, .gallery-thumb, [tabindex]').forEach(el => {
+    // Skip hidden elements
+    if (el.offsetParent === null && !el.closest('#gallery-strip')) return;
+    if (el.closest('#filter-bar') && !document.getElementById('filter-bar').classList.contains('show')) return;
+    els.push(el);
+  });
+
+  // Also include gallery strip items (at bottom of camera view)
+  document.querySelectorAll('#gallery-strip .gallery-thumb').forEach(el => els.push(el));
+
+  // Also include gallery modal buttons when visible
+  if (document.getElementById('gallery-modal').classList.contains('show')) {
+    document.querySelectorAll('#gallery-modal button, #gallery-modal .btn').forEach(el => els.push(el));
+  }
+
+  // Deduplicate
+  return [...new Set(els)];
+}
+
+function refreshTVFocusables() {
+  tvFocusables = getTVFocusables();
+  // Remove tv-focused from any element no longer in the list
+  document.querySelectorAll('.tv-focused').forEach(el => el.classList.remove('tv-focused'));
+  // If current index is out of bounds, reset
+  if (tvFocusIndex >= tvFocusables.length) tvFocusIndex = -1;
+}
+
+function applyTVFocus(index) {
+  // Remove focus class from all
+  document.querySelectorAll('.tv-focused').forEach(el => el.classList.remove('tv-focused'));
+
+  if (index < 0 || index >= tvFocusables.length) return;
+
+  const el = tvFocusables[index];
+  if (!el) return;
+
+  el.classList.add('tv-focused');
+  el.focus({ preventScroll: true });
+
+  // Scroll the element into view within the panel
+  if (el.closest('#panel')) {
+    const panel = document.getElementById('panel');
+    const rect = el.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    if (rect.bottom > panelRect.bottom - 10) {
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  tvFocusIndex = index;
+}
+
+function focusNext(direction) {
+  refreshTVFocusables();
+  if (tvFocusables.length === 0) return;
+
+  let newIndex;
+  if (tvFocusIndex < 0) {
+    // No focus yet, start at first or last depending on direction
+    newIndex = direction > 0 ? 0 : tvFocusables.length - 1;
+  } else {
+    newIndex = tvFocusIndex + direction;
+  }
+
+  // Wrap around
+  if (newIndex < 0) newIndex = tvFocusables.length - 1;
+  if (newIndex >= tvFocusables.length) newIndex = 0;
+
+  applyTVFocus(newIndex);
+}
+
+function focusTvFirstElement() {
+  refreshTVFocusables();
+  if (tvFocusables.length > 0) {
+    applyTVFocus(0);
+  }
+}
+
+function activateFocused() {
+  if (tvFocusIndex < 0 || tvFocusIndex >= tvFocusables.length) return;
+  const el = tvFocusables[tvFocusIndex];
+  if (el) {
     el.click();
-    e.preventDefault();
+  }
+}
+
+// Global key handler for TV remotes
+document.addEventListener('keydown', (e) => {
+  const key = e.key;
+  const handled = true;
+
+  switch (key) {
+    case 'ArrowUp':
+    case 'ArrowDown':
+    case 'ArrowLeft':
+    case 'ArrowRight': {
+      // Move in grid directions — treat Up/Down as -1/+1 index,
+      // Left/Right also as index based direction
+      const dir = (key === 'ArrowDown' || key === 'ArrowRight') ? 1 : -1;
+      focusNext(dir);
+      e.preventDefault();
+      break;
+    }
+    case 'Enter':
+    case ' ':
+    case 'Select':
+      activateFocused();
+      e.preventDefault();
+      break;
+    default:
+      return; // don't prevent default for other keys
   }
 });
 
-// Make gallery strips key-navigable on TV
-function focusTvFirstElement() {
-  // Focus the first button in the panel
-  const firstBtn = document.querySelector('#panel .btn, #panel button, [tabindex]');
-  if (firstBtn) firstBtn.focus();
-}
+// Re-index on DOM changes (filter bar toggle, gallery modal, gallery strip updates)
+const tvFocusObserver = new MutationObserver(() => {
+  refreshTVFocusables();
+});
+tvFocusObserver.observe(document.body, {
+  childList: true,
+  subtree: true,
+  attributes: true,
+  attributeFilter: ['class', 'style']
+});
+
+// Also refresh when key elements change their display state
+const _origToggleFilterBar = toggleFilterBar;
+toggleFilterBar = function() {
+  _origToggleFilterBar();
+  setTimeout(refreshTVFocusables, 50);
+};
+
+const _origCloseGalleryModal = closeGalleryModal;
+closeGalleryModal = function() {
+  _origCloseGalleryModal();
+  setTimeout(() => {
+    refreshTVFocusables();
+    focusTvFirstElement();
+  }, 100);
+};
 
 // ──────────────────────────────────────────────────
 // Init
@@ -1231,6 +1395,9 @@ window.addEventListener('load', () => {
   }
 
   startCamera();
+
+  // Focus the first button for TV remote users
+  setTimeout(focusTvFirstElement, 1500);
 });
 </script>
 
