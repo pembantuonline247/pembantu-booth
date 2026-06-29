@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "PembantuBooth"
-        private const val BOOTH_URL = "https://booth.pembantu.online/1"
+        private const val BOOTH_URL = "https://booth.pembantu.online/"
         private const val PERMISSION_REQUEST_CODE = 100
 
         private val REQUIRED_PERMISSIONS = arrayOf(
