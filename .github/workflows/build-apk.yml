@@ -24,20 +24,49 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Generate release keystore
+        run: |
+          keytool -genkey -v -keystore release.keystore \
+            -alias boothkey -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass pembantuan -keypass pembantuan \
+            -dname "CN=PembantuBooth, OU=PembantuOnline, O=Pembantu, L=KL, ST=Kuala Lumpur, C=MY"
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Sign & zip align the release APK
+        run: |
+          # Find apksigner
+          APKSIGNER=\$(ls \$ANDROID_HOME/build-tools/*/apksigner | head -1)
+          ZIPALIGN=\$(ls \$ANDROID_HOME/build-tools/*/zipalign | head -1)
+          
+          # Align then sign
+          \$ZIPALIGN -p -f -v 4 \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            app-release-aligned.apk
+          
+          \$APKSIGNER sign \
+            --ks release.keystore \
+            --ks-key-alias boothkey \
+            --ks-pass pass:pembantuan \
+            --key-pass pass:pembantuan \
+            --out pembantu-booth-signed.apk \
+            app-release-aligned.apk
+          
+          \$APKSIGNER verify pembantu-booth-signed.apk
+          echo "=== APK signed successfully ==="
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
-      - name: Build Release APK (unsigned)
-        run: ./gradlew assembleRelease
+      - name: Upload Signed Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: pembantu-booth-release-signed
+          path: pembantu-booth-signed.apk
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: pembantu-booth-debug
           path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-unsigned
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
