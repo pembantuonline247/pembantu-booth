@@ -9,7 +9,6 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
-import android.webkit.WebChromeClient.ConsoleMessage
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -104,11 +103,6 @@ class MainActivity : AppCompatActivity() {
             override fun onPermissionRequest(request: PermissionRequest) {
                 Log.d(TAG, "WebRTC grant: ${request.origin}")
                 request.grant(request.resources)
-            }
-
-            override fun onConsoleMessage(message: ConsoleMessage): Boolean {
-                Log.d(TAG, "JS [${message.messageLevel()}] ${message.message()}")
-                return true
             }
         }
 
