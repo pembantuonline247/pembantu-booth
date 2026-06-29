@@ -34,27 +34,16 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      - name: Sign & zip align the release APK
+      - name: Sign release APK with jarsigner
         run: |
-          # Find apksigner
-          APKSIGNER=\$(ls \$ANDROID_HOME/build-tools/*/apksigner | head -1)
-          ZIPALIGN=\$(ls \$ANDROID_HOME/build-tools/*/zipalign | head -1)
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
+            -keystore release.keystore -storepass pembantuan -keypass pembantuan \
+            app/build/outputs/apk/release/app-release-unsigned.apk boothkey
           
-          # Align then sign
-          \$ZIPALIGN -p -f -v 4 \
-            app/build/outputs/apk/release/app-release-unsigned.apk \
-            app-release-aligned.apk
+          jarsigner -verify app/build/outputs/apk/release/app-release-unsigned.apk
+          echo "=== Signed ==="
           
-          \$APKSIGNER sign \
-            --ks release.keystore \
-            --ks-key-alias boothkey \
-            --ks-pass pass:pembantuan \
-            --key-pass pass:pembantuan \
-            --out pembantu-booth-signed.apk \
-            app-release-aligned.apk
-          
-          \$APKSIGNER verify pembantu-booth-signed.apk
-          echo "=== APK signed successfully ==="
+          cp app/build/outputs/apk/release/app-release-unsigned.apk pembantu-booth-signed.apk
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
