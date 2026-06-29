@@ -9,6 +9,7 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
+import android.webkit.WebChromeClient.ConsoleMessage
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
