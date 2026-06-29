@@ -172,4 +172,15 @@ class BridgeJsInterface(private val bridge: DeviceBridge) {
     @JavascriptInterface
     fun wledSetBrightness(host: String, port: Int, brightness: Int, callbackId: String) =
         bridge.wledSetBrightness(host, port, brightness, callbackId)
+
+    @JavascriptInterface
+    fun scanIPCameras(callbackId: String) =
+        bridge.scanIPCameras(callbackId)
+
+    @JavascriptInterface
+    fun startIPCameraStream(ip: String, port: Int, url: String, type: String, fps: Int, callbackId: String) =
+        bridge.startIPCameraStream(ip, port, url, type, fps, callbackId)
+
+    @JavascriptInterface
+    fun stopIPCameraStream() = bridge.stopIPCameraStream()
 }

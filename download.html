@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Download Pembantu Booth</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    background: #1a1a2e; color: #eee;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 2rem;
+  }
+  .card {
+    background: #16213e; border-radius: 16px;
+    padding: 2.5rem; max-width: 480px; width: 100%;
+    text-align: center; border: 1px solid rgba(233,69,96,.2);
+  }
+  h1 { font-size: 1.5rem; margin-bottom: .5rem; color: #e94560; }
+  .sub { color: #888; font-size: .85rem; margin-bottom: 2rem; }
+  .icon { font-size: 4rem; margin-bottom: 1rem; }
+  .version { font-size: .75rem; color: #555; margin-bottom: 1.5rem; }
+  .btn {
+    display: inline-block; background: #e94560; color: #fff;
+    text-decoration: none; padding: 1rem 2.5rem; border-radius: 10px;
+    font-size: 1.1rem; font-weight: 600;
+    transition: opacity .2s, transform .1s;
+  }
+  .btn:hover { opacity: .9; }
+  .btn:active { transform: scale(.97); }
+  .info { margin-top: 1.5rem; font-size: .8rem; color: #666; line-height: 1.5; }
+  .features { text-align: left; margin: 1.5rem 0; font-size: .85rem; }
+  .features li { padding: .3rem 0; list-style: none; }
+  .features li::before { content: "✓ "; color: #2ecc71; }
+  a { color: #e94560; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .qr { margin: 1.5rem 0; }
+  .qr img { width: 160px; height: 160px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">📦</div>
+  <h1>Pembantu Booth</h1>
+  <p class="sub">Android App for Smart TV &amp; Android Stick</p>
+  <p class="version">v1.0.0 (3.1 MB)</p>
+
+  <a class="btn" href="pembantu-booth.apk" download>⬇ Download APK</a>
+
+  <div class="features">
+    <li>USB Camera + Mic via WebRTC</li>
+    <li>Auto-discover printers &amp; lights on WiFi</li>
+    <li>WLED smart light control</li>
+    <li>Network printing</li>
+    <li>Works on Android TV &amp; Stick</li>
+  </div>
+
+  <p class="info">
+    Enable <strong>Install from Unknown Sources</strong> on your device to sideload.<br>
+    Booth page: <a href="https://booth.pembantu.online/">booth.pembantu.online</a><br>
+    Source: <a href="https://github.com/pembantuonline247/pembantu-booth">GitHub</a>
+  </p>
+</div>
+</body>
+</html>
