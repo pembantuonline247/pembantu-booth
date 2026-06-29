@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
@@ -92,11 +93,17 @@ class MainActivity : AppCompatActivity() {
             cacheMode = WebSettings.LOAD_DEFAULT
             setSupportZoom(false)
             builtInZoomControls = false
+            setNeedInitialFocus(true)
         }
 
+        // TV / D-pad navigation support
         myWebView.isFocusable = true
         myWebView.isFocusableInTouchMode = true
-        myWebView.requestFocus()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            myWebView.setDefaultFocusHighlightEnabled(true)
+        }
+        myWebView.requestFocusFromTouch()
+        myWebView.requestFocus(View.FOCUS_DOWN)
 
         // --- Auto-grant WebRTC camera/mic ---
         myWebView.webChromeClient = object : WebChromeClient() {

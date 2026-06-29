@@ -137,7 +137,156 @@
   }
   #flash.active { opacity: .7; }
 
-  :focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 3px solid #e94560 !important;
+    outline-offset: 4px !important;
+    box-shadow: 0 0 20px rgba(233,69,96,.5), 0 0 40px rgba(233,69,96,.2) !important;
+    border-radius: 6px;
+  }
+
+  /* TV/remote focus ring on buttons */
+  button:focus-visible,
+  [tabindex]:focus-visible,
+  .btn:focus-visible,
+  .filter-chip:focus-visible,
+  .color-swatch:focus-visible,
+  .gallery-thumb:focus-visible,
+  .device-list li:focus-visible,
+  .source-tab:focus-visible {
+    outline: 3px solid #e94560 !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 16px rgba(233,69,96,.6);
+    transform: scale(1.05);
+  }
+
+  /* ── Countdown overlay ── */
+  #countdown-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.6); z-index: 50;
+  }
+  #countdown-overlay.show { display: flex; }
+  #countdown-num {
+    font-size: 12rem; font-weight: 900; color: #fff;
+    text-shadow: 0 0 40px rgba(233,69,96,.5);
+    animation: countPulse .8s ease-out;
+  }
+  @keyframes countPulse {
+    0% { transform: scale(1.6); opacity: 0; }
+    50% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+
+  /* ── Gallery strip ── */
+  #gallery-strip {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 80px; background: rgba(0,0,0,.7);
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 10px; overflow-x: auto; z-index: 40;
+    backdrop-filter: blur(4px);
+  }
+  #gallery-strip.hidden { display: none; }
+  .gallery-thumb {
+    height: 64px; width: auto; border-radius: 4px;
+    cursor: pointer; border: 2px solid transparent;
+    transition: border-color .2s, transform .15s;
+    flex-shrink: 0;
+  }
+  .gallery-thumb:hover { border-color: var(--accent); transform: scale(1.05); }
+  .gallery-thumb.video-thumb { position: relative; }
+  .gallery-thumb.video-thumb::after {
+    content: '▶'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    color: #fff; font-size: 1.2rem;
+    text-shadow: 0 0 8px rgba(0,0,0,.8);
+  }
+
+  /* ── Gallery modal ── */
+  #gallery-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,.92); z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column; padding: 2rem;
+  }
+  #gallery-modal.show { display: flex; }
+  #gallery-modal img, #gallery-modal video {
+    max-width: 90vw; max-height: 75vh;
+    border-radius: 8px; object-fit: contain;
+  }
+  #gallery-modal .modal-actions {
+    margin-top: 1rem; display: flex; gap: .8rem;
+  }
+  #gallery-modal .btn-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; color: #fff;
+    font-size: 2rem; cursor: pointer; opacity: .7;
+  }
+  #gallery-modal .btn-close:hover { opacity: 1; }
+
+  /* ── Recording indicator ── */
+  #rec-indicator {
+    position: absolute; top: 16px; right: 16px;
+    display: none; align-items: center; gap: 8px;
+    background: rgba(0,0,0,.7); padding: 8px 14px;
+    border-radius: 20px; z-index: 45; font-size: .85rem;
+  }
+  #rec-indicator.show { display: flex; }
+  #rec-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #e94560; animation: recBlink 1s infinite;
+  }
+  @keyframes recBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .3; }
+  }
+  #rec-time { font-weight: 600; letter-spacing: 1px; }
+
+  /* ── Recording button ── */
+  #rec-btn {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 3px solid #e94560; background: transparent;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: all .2s;
+    flex-shrink: 0;
+  }
+  #rec-btn .inner {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #e94560; transition: all .3s;
+  }
+  #rec-btn.recording .inner {
+    width: 14px; height: 14px; border-radius: 3px;
+  }
+  #rec-btn.recording { border-color: #fff; }
+
+  /* ── Filter overlay ── */
+  .filter-normal { filter: none; }
+  .filter-grayscale { filter: grayscale(1); }
+  .filter-sepia { filter: sepia(.8); }
+  .filter-vintage { filter: sepia(.5) contrast(1.2) brightness(.9); }
+  .filter-cool { filter: hue-rotate(180deg) saturate(.6); }
+
+  #filter-bar {
+    display: none; gap: 4px; margin-top: .4rem;
+  }
+  #filter-bar.show { display: flex; }
+  .filter-chip {
+    padding: 3px 8px; border-radius: 10px;
+    font-size: .65rem; background: rgba(255,255,255,.1);
+    border: 1px solid transparent; cursor: pointer;
+    color: var(--muted); transition: all .15s;
+  }
+  .filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── Burst count badge ── */
+  #burst-badge {
+    position: absolute; top: 16px; left: 16px;
+    background: var(--accent); color: #fff;
+    padding: 6px 12px; border-radius: 6px;
+    font-size: .8rem; font-weight: 600;
+    display: none; z-index: 45;
+  }
+  #burst-badge.show { display: block; }
 
   .spinner {
     display: inline-block; width: 12px; height: 12px;
@@ -171,6 +320,17 @@
       <div id="cam-status">Waiting for camera...</div>
     </div>
     <div id="flash"></div>
+    <!-- Countdown overlay -->
+    <div id="countdown-overlay"><span id="countdown-num"></span></div>
+    <!-- Recording indicator -->
+    <div id="rec-indicator">
+      <span id="rec-dot"></span>
+      <span id="rec-time">00:00</span>
+    </div>
+    <!-- Burst badge -->
+    <div id="burst-badge"></div>
+    <!-- Gallery strip -->
+    <div id="gallery-strip" class="hidden"></div>
   </div>
 
   <div id="panel">
@@ -183,18 +343,29 @@
     <div class="section">
       <h2>📷 Source</h2>
       <div class="source-tabs">
-        <button class="source-tab active" data-source="usb" onclick="switchSource('usb')">USB Cam</button>
-        <button class="source-tab" data-source="ipcam" onclick="switchSource('ipcam')">IP Camera</button>
+        <button class="source-tab active" data-source="usb" onclick="switchSource('usb')" tabindex="0">USB Cam</button>
+        <button class="source-tab" data-source="ipcam" onclick="switchSource('ipcam')" tabindex="0">IP Camera</button>
       </div>
       <div class="action-row">
-        <button class="btn btn-primary btn-sm" onclick="capturePhoto()">Capture</button>
-        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="toggleMirror()">Flip</button>
+        <button class="btn btn-primary btn-sm" onclick="capturePhoto()" tabindex="0">Capture</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="countdownAndCapture()" tabindex="0">⏱ Timer</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="burstMode()" tabindex="0">🔥 Burst</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="toggleFilterBar()" tabindex="0">🎨 Filter</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="toggleMirror()" tabindex="0">↔ Flip</button>
+      </div>
+      <!-- Filter bar -->
+      <div id="filter-bar">
+        <span class="filter-chip active" data-filter="normal" onclick="setFilter('normal')" tabindex="0" role="button">Normal</span>
+        <span class="filter-chip" data-filter="grayscale" onclick="setFilter('grayscale')" tabindex="0" role="button">B&amp;W</span>
+        <span class="filter-chip" data-filter="sepia" onclick="setFilter('sepia')" tabindex="0" role="button">Sepia</span>
+        <span class="filter-chip" data-filter="vintage" onclick="setFilter('vintage')" tabindex="0" role="button">Vintage</span>
+        <span class="filter-chip" data-filter="cool" onclick="setFilter('cool')" tabindex="0" role="button">Cool</span>
       </div>
     </div>
 
     <!-- IP Cameras -->
     <div class="section" id="ip-cam-section">
-      <h2>📡 IP Cameras <button class="btn btn-sm" style="background:rgba(255,255,255,.1);margin-left:.5rem" onclick="scanForCameras()">Scan</button><span id="cam-scanning" style="display:none;margin-left:.3rem"><span class="spinner"></span></span></h2>
+      <h2>📡 IP Cameras <button class="btn btn-sm" style="background:rgba(255,255,255,.1);margin-left:.5rem" onclick="scanForCameras()" tabindex="0">Scan</button><span id="cam-scanning" style="display:none;margin-left:.3rem"><span class="spinner"></span></span></h2>
       <div id="ip-camera-list">
         <p style="font-size:.75rem;color:var(--muted)">Tap Scan to find cameras on WiFi</p>
       </div>
@@ -213,25 +384,47 @@
     <div class="section" id="lights-section" style="display:none">
       <h2>💡 Lights</h2>
       <div class="color-grid">
-        <div class="color-swatch" style="background:#e94560" data-r="233" data-g="69" data-b="96" onclick="setLight(this)"></div>
-        <div class="color-swatch" style="background:#2ecc71" data-r="46" data-g="204" data-b="113" onclick="setLight(this)"></div>
-        <div class="color-swatch" style="background:#3498db" data-r="52" data-g="152" data-b="219" onclick="setLight(this)"></div>
-        <div class="color-swatch" style="background:#f1c40f" data-r="241" data-g="196" data-b="15" onclick="setLight(this)"></div>
-        <div class="color-swatch" style="background:#9b59b6" data-r="155" data-g="89" data-b="182" onclick="setLight(this)"></div>
-        <div class="color-swatch" style="background:#fff" data-r="255" data-g="255" data-b="255" onclick="setLight(this)"></div>
-        <div class="color-swatch" style="background:#000" data-r="0" data-g="0" data-b="0" onclick="setLight(this)"></div>
+        <div class="color-swatch" style="background:#e94560" data-r="233" data-g="69" data-b="96" onclick="setLight(this)" tabindex="0"></div>
+        <div class="color-swatch" style="background:#2ecc71" data-r="46" data-g="204" data-b="113" onclick="setLight(this)" tabindex="0"></div>
+        <div class="color-swatch" style="background:#3498db" data-r="52" data-g="152" data-b="219" onclick="setLight(this)" tabindex="0"></div>
+        <div class="color-swatch" style="background:#f1c40f" data-r="241" data-g="196" data-b="15" onclick="setLight(this)" tabindex="0"></div>
+        <div class="color-swatch" style="background:#9b59b6" data-r="155" data-g="89" data-b="182" onclick="setLight(this)" tabindex="0"></div>
+        <div class="color-swatch" style="background:#fff" data-r="255" data-g="255" data-b="255" onclick="setLight(this)" tabindex="0"></div>
+        <div class="color-swatch" style="background:#000" data-r="0" data-g="0" data-b="0" onclick="setLight(this)" tabindex="0"></div>
       </div>
       <div class="action-row">
-        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="strobe()">Strobe</button>
-        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="rainbow()">Rainbow</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="strobe()" tabindex="0">Strobe</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="rainbow()" tabindex="0">Rainbow</button>
       </div>
     </div>
 
     <!-- Print -->
     <div class="section" id="print-section" style="display:none">
       <h2>🖨️ Print</h2>
-      <button class="btn btn-primary btn-sm" onclick="printPhoto()">Print Last Photo</button>
+      <button class="btn btn-primary btn-sm" onclick="printPhoto()" tabindex="0">Print Last Photo</button>
       <span id="print-status" style="font-size:.7rem;color:var(--muted);margin-left:.5rem"></span>
+    </div>
+
+    <!-- Video Recording -->
+    <div class="section">
+      <h2>🎥 Video</h2>
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <button id="rec-btn" onclick="toggleRecording()" tabindex="0"><span class="inner"></span></button>
+        <span style="font-size:.75rem;color:var(--muted)">Tap to start recording</span>
+      </div>
+      <div id="video-preview" style="display:none;margin-top:.5rem">
+        <video id="recorded-video" controls style="width:100%;border-radius:6px;max-height:150px"></video>
+        <div class="action-row">
+          <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="downloadVideo()">⬇ Download</button>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="clearVideo()">🗑 Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="section">
+      <h2>🖼️ Gallery <span id="gallery-count" style="font-size:.7rem;color:var(--muted);font-weight:normal"></span></h2>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="clearGallery()" tabindex="0">🗑 Clear All</button>
     </div>
 
     <div id="status-bar">
@@ -628,6 +821,316 @@ window.addEventListener('onPrintResult', (e) => {
   else { log('err', 'Print failed: ' + (r.error || '')); document.getElementById('print-status').textContent = '❌ Failed'; }
 });
 
+// ──────────────────────────────────────────────────
+// Photo Booth: Gallery
+// ──────────────────────────────────────────────────
+const gallery = [];
+let modalIndex = -1;
+
+function addToGallery(dataUrl, type) {
+  gallery.unshift({ dataUrl, type: type || 'photo' });
+  if (gallery.length > 50) gallery.pop();
+  renderGalleryStrip();
+}
+
+function renderGalleryStrip() {
+  const strip = document.getElementById('gallery-strip');
+  strip.innerHTML = '';
+  gallery.forEach((item, i) => {
+    const el = item.type === 'photo'
+      ? Object.assign(document.createElement('img'), { className: 'gallery-thumb', src: item.dataUrl })
+      : Object.assign(document.createElement('video'), { className: 'gallery-thumb video-thumb', src: item.dataUrl, muted: true });
+    el.onclick = () => openGalleryModal(i);
+    strip.appendChild(el);
+  });
+  strip.classList.remove('hidden');
+  document.getElementById('gallery-count').textContent = `(${gallery.length})`;
+}
+
+function openGalleryModal(index) {
+  modalIndex = index;
+  const item = gallery[index];
+  const modal = document.getElementById('gallery-modal');
+  const img = document.getElementById('modal-img');
+  const video = document.getElementById('modal-video');
+  img.style.display = 'none';
+  video.style.display = 'none';
+  if (item.type === 'photo') {
+    img.src = item.dataUrl;
+    img.style.display = 'block';
+  } else {
+    video.src = item.dataUrl;
+    video.style.display = 'block';
+  }
+  modal.classList.add('show');
+}
+
+function closeGalleryModal() {
+  document.getElementById('gallery-modal').classList.remove('show');
+  document.getElementById('modal-video').pause();
+}
+
+function downloadModalItem() {
+  if (modalIndex < 0) return;
+  const item = gallery[modalIndex];
+  const a = document.createElement('a');
+  a.href = item.dataUrl;
+  a.download = `booth-${Date.now()}.${item.type === 'photo' ? 'jpg' : 'webm'}`;
+  a.click();
+}
+
+function deleteModalItem() {
+  if (modalIndex < 0) return;
+  gallery.splice(modalIndex, 1);
+  closeGalleryModal();
+  renderGalleryStrip();
+}
+
+function clearGallery() {
+  gallery.length = 0;
+  document.getElementById('gallery-strip').classList.add('hidden');
+  document.getElementById('gallery-count').textContent = '';
+  closeGalleryModal();
+}
+
+// ──────────────────────────────────────────────────
+// Photo Booth: Countdown + Capture
+// ──────────────────────────────────────────────────
+let countdownActive = false;
+
+function countdownAndCapture() {
+  if (countdownActive) return;
+  countdownActive = true;
+  const overlay = document.getElementById('countdown-overlay');
+  const num = document.getElementById('countdown-num');
+  let count = 3;
+  overlay.classList.add('show');
+  const tick = () => {
+    if (count > 0) {
+      num.textContent = count;
+      num.style.animation = 'none';
+      void num.offsetWidth;
+      num.style.animation = 'countPulse .8s ease-out';
+      count--;
+      setTimeout(tick, 800);
+    } else {
+      overlay.classList.remove('show');
+      countdownActive = false;
+      capturePhoto();
+    }
+  };
+  tick();
+}
+
+// ──────────────────────────────────────────────────
+// Photo Booth: Burst Mode
+// ──────────────────────────────────────────────────
+let burstActive = false;
+
+function burstMode() {
+  if (burstActive) return;
+  burstActive = true;
+  const badge = document.getElementById('burst-badge');
+  const count = 5;
+  let taken = 0;
+  badge.textContent = `🔥 Burst 0/${count}`;
+  badge.classList.add('show');
+  const snap = () => {
+    if (taken >= count || !burstActive) {
+      badge.classList.remove('show');
+      burstActive = false;
+      return;
+    }
+    capturePhoto();
+    taken++;
+    badge.textContent = `🔥 Burst ${taken}/${count}`;
+    setTimeout(snap, 400);
+  };
+  snap();
+}
+
+// ──────────────────────────────────────────────────
+// Photo Booth: Filters
+// ──────────────────────────────────────────────────
+let currentFilter = 'normal';
+
+function toggleFilterBar() {
+  const bar = document.getElementById('filter-bar');
+  bar.classList.toggle('show');
+}
+
+function setFilter(name) {
+  currentFilter = name;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.filter-chip[data-filter="${name}"]`).classList.add('active');
+  const video = document.getElementById('video');
+  const ipFeed = document.getElementById('ip-cam-feed');
+  [video, ipFeed].forEach(el => {
+    el.className = el.className.replace(/filter-\w+/g, '').trim();
+    if (name !== 'normal') el.classList.add('filter-' + name);
+  });
+}
+
+// ──────────────────────────────────────────────────
+// Video Booth: Recording
+// ──────────────────────────────────────────────────
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordingTimer = null;
+let recordingStart = 0;
+
+function toggleRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
+async function startRecording() {
+  let recStream = state.stream;
+
+  // For IP camera mode, we need to record from the img element via canvas
+  if (state.currentSource === 'ipcam' || !recStream) {
+    // Capture stream from the active video/img element
+    const srcEl = state.currentSource === 'ipcam'
+      ? document.getElementById('ip-cam-feed')
+      : document.getElementById('video');
+    if (!srcEl || !srcEl.src) { log('err', 'No video source to record'); return; }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 640; canvas.height = 480;
+
+    recStream = canvas.captureStream(15);
+    const frameInterval = setInterval(() => {
+      if (mediaRecorder && mediaRecorder.state !== 'recording') {
+        clearInterval(frameInterval);
+        return;
+      }
+      ctx.drawImage(srcEl, 0, 0, 640, 480);
+    }, 66);
+  }
+
+  if (!recStream) { log('err', 'No stream to record'); return; }
+
+  recordedChunks = [];
+  try {
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+      ? 'video/webm;codecs=vp9'
+      : 'video/webm';
+    mediaRecorder = new MediaRecorder(recStream, { mimeType });
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      state.lastVideo = { blob, url };
+      showVideoPreview(url);
+      log('ok', `Video recorded: ${(blob.size / 1024 / 1024).toFixed(1)} MB`);
+      document.getElementById('rec-indicator').classList.remove('show');
+      document.getElementById('rec-btn').classList.remove('recording');
+    };
+
+    mediaRecorder.start(100); // collect data every 100ms
+    recordingStart = Date.now();
+
+    document.getElementById('rec-btn').classList.add('recording');
+    document.getElementById('rec-indicator').classList.add('show');
+    document.querySelector('[onclick="toggleRecording()"] ~ span').textContent = 'Recording... tap to stop';
+
+    recordingTimer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - recordingStart) / 1000);
+      const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      document.getElementById('rec-time').textContent = `${m}:${s}`;
+    }, 500);
+
+    log('ok', 'Recording started');
+  } catch (e) {
+    log('err', 'Recording error: ' + e.message);
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    clearInterval(recordingTimer);
+    document.querySelector('[onclick="toggleRecording()"] ~ span').textContent = 'Tap to start recording';
+    log('ok', 'Recording stopped');
+  }
+}
+
+function showVideoPreview(url) {
+  const preview = document.getElementById('video-preview');
+  const video = document.getElementById('recorded-video');
+  video.src = url;
+  preview.style.display = 'block';
+}
+
+function downloadVideo() {
+  if (state.lastVideo) {
+    const a = document.createElement('a');
+    a.href = state.lastVideo.url;
+    a.download = `booth-video-${Date.now()}.webm`;
+    a.click();
+  }
+}
+
+function clearVideo() {
+  document.getElementById('video-preview').style.display = 'none';
+  document.getElementById('recorded-video').src = '';
+  state.lastVideo = null;
+}
+
+// ──────────────────────────────────────────────────
+// Override capturePhoto to add to gallery
+// ──────────────────────────────────────────────────
+const _origCapture = capturePhoto;
+capturePhoto = function() {
+  if (state.currentSource === 'ipcam' && state.activeIpCamera) {
+    const img = document.getElementById('ip-cam-feed');
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || 640;
+    canvas.height = img.naturalHeight || 480;
+    const ctx = canvas.getContext('2d');
+    const filter = currentFilter !== 'normal' ? currentFilter : null;
+    if (filter) ctx.filter = getFilterCSS(filter);
+    ctx.drawImage(img, 0, 0);
+    state.lastPhoto = canvas.toDataURL('image/jpeg', 0.85);
+  } else {
+    const video = document.getElementById('video');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+    const ctx = canvas.getContext('2d');
+    if (state.mirror) ctx.translate(canvas.width, 0), ctx.scale(-1, 1);
+    const filter = currentFilter !== 'normal' ? currentFilter : null;
+    if (filter) ctx.filter = getFilterCSS(filter);
+    ctx.drawImage(video, 0, 0);
+    state.lastPhoto = canvas.toDataURL('image/jpeg', 0.85);
+  }
+
+  addToGallery(state.lastPhoto, 'photo');
+  const flash = document.getElementById('flash');
+  flash.classList.add('active');
+  setTimeout(() => flash.classList.remove('active'), 150);
+  log('ok', 'Photo captured');
+}
+
+function getFilterCSS(name) {
+  switch(name) {
+    case 'grayscale': return 'grayscale(1)';
+    case 'sepia': return 'sepia(0.8)';
+    case 'vintage': return 'sepia(0.5) contrast(1.2) brightness(0.9)';
+    case 'cool': return 'hue-rotate(180deg) saturate(0.6)';
+    default: return 'none';
+  }
+}
+
 // ── IP Camera events ──
 window.addEventListener('onCameraScanStart', () => {
   log('info', 'Scanning for IP cameras...');
@@ -697,6 +1200,25 @@ window.addEventListener('onCameraStreamError', (e) => {
 });
 
 // ──────────────────────────────────────────────────
+// TV Remote / D-pad key support
+// ──────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ' || e.key === 'Select') && e.target && e.target !== document.body) {
+    const el = e.target;
+    // Trigger click on whatever is focused
+    el.click();
+    e.preventDefault();
+  }
+});
+
+// Make gallery strips key-navigable on TV
+function focusTvFirstElement() {
+  // Focus the first button in the panel
+  const firstBtn = document.querySelector('#panel .btn, #panel button, [tabindex]');
+  if (firstBtn) firstBtn.focus();
+}
+
+// ──────────────────────────────────────────────────
 // Init
 // ──────────────────────────────────────────────────
 window.addEventListener('load', () => {
@@ -711,5 +1233,17 @@ window.addEventListener('load', () => {
   startCamera();
 });
 </script>
+
+<!-- Gallery modal -->
+<div id="gallery-modal">
+  <button class="btn-close" onclick="closeGalleryModal()">✕</button>
+  <img id="modal-img" style="display:none" />
+  <video id="modal-video" style="display:none" controls></video>
+  <div class="modal-actions">
+    <button class="btn btn-primary btn-sm" id="modal-dl-btn" onclick="downloadModalItem()">⬇ Download</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.1)" onclick="deleteModalItem()">🗑 Delete</button>
+  </div>
+</div>
+
 </body>
 </html>
